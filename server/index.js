@@ -6,7 +6,7 @@ const startButton = document.getElementById('startButton');
 const stopButton = document.getElementById('stopButton');
 const statsDisplay = document.getElementById('stats');
 const requestMessagesButton = document.createElement('button');
-requestMessagesButton.textContent = 'Request 1000 Messages';
+requestMessagesButton.textContent = 'Request 10000 Messages';
 document.body.insertBefore(requestMessagesButton, messagesList);
 
 let renderTimes = [];
