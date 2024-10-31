@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebSocket Client</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    #messages {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .message {
+      border-bottom: 1px solid #ddd;
+      padding: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>WebSocket Client</h1>
+  <button id="startButton">Start</button>
+  <button id="stopButton">Stop</button>
+  <div id="stats">Min Render Time: N/A, Max Render Time: N/A, Avg Render Time: N/A</div>
+  <ul id="messages"></ul>
+
+  <script src="index.js"></script>
+</body>
+
+</html>
