@@ -96,7 +96,7 @@ requestMessagesButton.addEventListener('click', () => {
   const fetchRenderTimes = [];
 
   for (let i = 0; i < 10; i++) {
-    fetch(`http://localhost:8081/messages?batch=${i}`, { headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' } })
+    fetch(`http://localhost:8081/messages`, { headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' } })
       .then(response => response.json())
       .then(data => {
         data.forEach((message) => {

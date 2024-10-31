@@ -80,9 +80,9 @@ server.on('connection', (socket) => {
 // Create HTTP server to handle GET request for messages and serve HTML/JS files
 const httpServer = http.createServer((req, res) => {
   if (req.method === 'GET' && req.url === '/messages') {
-    // Generate 10000 new messages when requested
+    // Generate 1000 new messages when requested
     const messages = [];
-    for (let i = 0; i < 10000; i++) {
+    for (let i = 0; i < 1000; i++) {
       messages.push(generateMessage());
     }
     res.writeHead(200, { 'Content-Type': 'application/json' });
