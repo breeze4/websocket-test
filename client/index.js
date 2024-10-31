@@ -45,6 +45,11 @@ startButton.addEventListener('click', () => {
         messagesList.appendChild(listItem);
       }
 
+      // Limit the number of messages to 10000
+      if (messagesList.childElementCount > 10000) {
+        messagesList.removeChild(messagesList.lastChild);
+      }
+
       const renderEndTime = performance.now();
       const renderTime = renderEndTime - renderStartTime;
       renderTimes.push(renderTime);

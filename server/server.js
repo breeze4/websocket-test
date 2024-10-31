@@ -23,22 +23,42 @@ server.on('connection', (socket) => {
     };
   };
 
-  // Function to send messages with controlled frequency
-  const sendMessages = () => {
+  // Function to send messages using setImmediate (high frequency)
+  const sendMessagesWithSetImmediate = () => {
     if (socket.readyState === WebSocket.OPEN) {
       const message = generateMessage();
       socket.send(JSON.stringify(message), (err) => {
         if (err) {
           console.error('Failed to send message:', err);
         } else {
-          setImmediate(sendMessages); // Schedule the next message
+          setImmediate(sendMessagesWithSetImmediate); // Schedule the next message
         }
       });
     }
   };
 
-  // Start sending messages
-  setImmediate(sendMessages);
+  // Function to send messages using setTimeout (controlled frequency)
+  const sendMessagesWithSetTimeout = () => {
+    if (socket.readyState === WebSocket.OPEN) {
+      const message = generateMessage();
+      socket.send(JSON.stringify(message), (err) => {
+        if (err) {
+          console.error('Failed to send message:', err);
+        } else {
+          setTimeout(sendMessagesWithSetTimeout, 0); // Schedule the next message after 10ms
+        }
+      });
+    }
+  };
+
+  // Choose which approach to use: setImmediate or setTimeout
+  const useSetImmediate = true; // Set to false to use setTimeout instead
+
+  if (useSetImmediate) {
+    setImmediate(sendMessagesWithSetImmediate);
+  } else {
+    setTimeout(sendMessagesWithSetTimeout, 0);
+  }
 
   // Handle client disconnection
   socket.on('close', () => {
