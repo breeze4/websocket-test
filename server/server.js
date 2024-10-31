@@ -10,20 +10,19 @@ const server = new WebSocket.Server({ port: 8080 }, () => {
 });
 
 let messages = [];
-let sequenceNumber = 0;
 
 // Function to generate random message
 const generateMessage = () => {
   const uniqueId = crypto.randomUUID();
+  const sequenceNumber = messages.length + 1;
   const randomText = crypto.randomBytes(1024).toString('hex').slice(0, 1024);
   const message = {
     uniqueId,
     sequenceNumber,
     randomText,
   };
-  sequenceNumber++
-  if (messages.length >= 10000) {
-    messages.shift(); // Remove the oldest message to maintain the limit of 10000
+  if (messages.length >= 1000) {
+    messages.shift(); // Remove the oldest message to maintain the limit of 1000
   }
   messages.push(message);
   return message;
@@ -71,8 +70,6 @@ server.on('connection', (socket) => {
 
   // Handle client disconnection
   socket.on('close', () => {
-    messages = []
-    sequenceNumber = 0;
     console.log('Client disconnected');
   });
 });
@@ -80,9 +77,9 @@ server.on('connection', (socket) => {
 // Create HTTP server to handle GET request for messages and serve HTML/JS files
 const httpServer = http.createServer((req, res) => {
   if (req.method === 'GET' && req.url === '/messages') {
-    // Generate 10000 new messages when requested
-    const messages = [];
-    for (let i = 0; i < 10000; i++) {
+    // Generate 1000 new messages when requested
+    messages = [];
+    for (let i = 0; i < 1000; i++) {
       messages.push(generateMessage());
     }
     res.writeHead(200, { 'Content-Type': 'application/json' });
