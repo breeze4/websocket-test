@@ -114,7 +114,7 @@ requestMessagesButton.addEventListener('click', () => {
         completedRequests++;
         if (completedRequests === 10) {
           const fetchEndTime = performance.now();
-          console.log(`Fetched and rendered 1000 messages in ${(fetchEndTime - fetchStartTime).toFixed(2)} ms`);
+          console.log(`Fetched and rendered 10000 messages in ${(fetchEndTime - fetchStartTime).toFixed(2)} ms`);
           logFetchRenderStats(fetchRenderTimes);
           updateStats();
         }
