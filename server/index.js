@@ -90,16 +90,29 @@ stopButton.addEventListener('click', () => {
 
 // Request 10000 messages from HTTP server
 requestMessagesButton.addEventListener('click', () => {
+  const fetchStartTime = performance.now();
   fetch('http://localhost:8081/messages', { headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' } })
     .then(response => response.json())
     .then(data => {
       messagesList.innerHTML = ''; // Clear existing messages
+      const fetchRenderTimes = [];
+
       data.forEach((message) => {
+        const renderStartTime = performance.now();
         const listItem = document.createElement('li');
         listItem.className = 'message';
         listItem.textContent = `ID: ${message.uniqueId}, Sequence: ${message.sequenceNumber}, Text: ${message.randomText}`;
         messagesList.appendChild(listItem);
+        const renderEndTime = performance.now();
+        const renderTime = renderEndTime - renderStartTime;
+        fetchRenderTimes.push(renderTime);
+        renderTimes.push(renderTime);
       });
+
+      const fetchEndTime = performance.now();
+      console.log(`Fetched and rendered 10000 messages in ${(fetchEndTime - fetchStartTime).toFixed(2)} ms`);
+      logFetchRenderStats(fetchRenderTimes);
+      updateStats();
     })
     .catch(error => {
       console.error('Error fetching messages:', error);
@@ -135,6 +148,17 @@ function logRenderTimeStats() {
     const p95 = percentile(renderTimes, 95).toFixed(2);
     const p99 = percentile(renderTimes, 99).toFixed(2);
     console.log(`Render Times - P50: ${p50} ms, P95: ${p95} ms, P99: ${p99} ms`);
+  }
+}
+
+// Function to log fetch render time statistics
+function logFetchRenderStats(fetchRenderTimes) {
+  if (fetchRenderTimes.length > 0) {
+    fetchRenderTimes.sort((a, b) => a - b);
+    const p50 = percentile(fetchRenderTimes, 50).toFixed(2);
+    const p95 = percentile(fetchRenderTimes, 95).toFixed(2);
+    const p99 = percentile(fetchRenderTimes, 99).toFixed(2);
+    console.log(`Fetch Render Times - P50: ${p50} ms, P95: ${p95} ms, P99: ${p99} ms`);
   }
 }
 
