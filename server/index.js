@@ -6,7 +6,7 @@ const startButton = document.getElementById('startButton');
 const stopButton = document.getElementById('stopButton');
 const statsDisplay = document.getElementById('stats');
 const requestMessagesButton = document.createElement('button');
-requestMessagesButton.textContent = 'Request 10000 Messages';
+requestMessagesButton.textContent = 'Request 1000 Messages';
 document.body.insertBefore(requestMessagesButton, messagesList);
 
 let renderTimes = [];
@@ -48,8 +48,8 @@ startButton.addEventListener('click', () => {
         messagesList.appendChild(listItem);
       }
 
-      // Limit the number of messages to 10000
-      if (messagesList.childElementCount > 10000) {
+      // Limit the number of messages to 1000
+      if (messagesList.childElementCount > 1000) {
         messagesList.removeChild(messagesList.lastChild);
       }
 
@@ -88,35 +88,41 @@ stopButton.addEventListener('click', () => {
   }
 });
 
-// Request 10000 messages from HTTP server
+// Request 1000 messages from HTTP server in 10 separate requests
 requestMessagesButton.addEventListener('click', () => {
+  messagesList.innerHTML = ''; // Clear existing messages
   const fetchStartTime = performance.now();
-  fetch('http://localhost:8081/messages', { headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' } })
-    .then(response => response.json())
-    .then(data => {
-      messagesList.innerHTML = ''; // Clear existing messages
-      const fetchRenderTimes = [];
+  let completedRequests = 0;
+  const fetchRenderTimes = [];
 
-      data.forEach((message) => {
-        const renderStartTime = performance.now();
-        const listItem = document.createElement('li');
-        listItem.className = 'message';
-        listItem.textContent = `ID: ${message.uniqueId}, Sequence: ${message.sequenceNumber}, Text: ${message.randomText}`;
-        messagesList.appendChild(listItem);
-        const renderEndTime = performance.now();
-        const renderTime = renderEndTime - renderStartTime;
-        fetchRenderTimes.push(renderTime);
-        renderTimes.push(renderTime);
+  for (let i = 0; i < 10; i++) {
+    fetch(`http://localhost:8081/messages?batch=${i}`, { headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' } })
+      .then(response => response.json())
+      .then(data => {
+        data.forEach((message) => {
+          const renderStartTime = performance.now();
+          const listItem = document.createElement('li');
+          listItem.className = 'message';
+          listItem.textContent = `ID: ${message.uniqueId}, Sequence: ${message.sequenceNumber}, Text: ${message.randomText}`;
+          messagesList.appendChild(listItem);
+          const renderEndTime = performance.now();
+          const renderTime = renderEndTime - renderStartTime;
+          fetchRenderTimes.push(renderTime);
+          renderTimes.push(renderTime);
+        });
+
+        completedRequests++;
+        if (completedRequests === 10) {
+          const fetchEndTime = performance.now();
+          console.log(`Fetched and rendered 1000 messages in ${(fetchEndTime - fetchStartTime).toFixed(2)} ms`);
+          logFetchRenderStats(fetchRenderTimes);
+          updateStats();
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching messages:', error);
       });
-
-      const fetchEndTime = performance.now();
-      console.log(`Fetched and rendered 10000 messages in ${(fetchEndTime - fetchStartTime).toFixed(2)} ms`);
-      logFetchRenderStats(fetchRenderTimes);
-      updateStats();
-    })
-    .catch(error => {
-      console.error('Error fetching messages:', error);
-    });
+  }
 });
 
 // Function to update render time statistics
