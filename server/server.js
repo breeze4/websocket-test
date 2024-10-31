@@ -9,7 +9,7 @@ const server = new WebSocket.Server({ port: 8080 }, () => {
   console.log('WebSocket server is listening on ws://localhost:8080');
 });
 
-let messages = [];
+let wsMessages = [];
 let sequenceNumber = 0;
 
 // Function to generate random message
@@ -22,10 +22,10 @@ const generateMessage = () => {
     randomText,
   };
   sequenceNumber++
-  if (messages.length >= 10000) {
-    messages.shift(); // Remove the oldest message to maintain the limit of 10000
+  if (wsMessages.length >= 10000) {
+    wsMessages.shift(); // Remove the oldest message to maintain the limit of 10000
   }
-  messages.push(message);
+  wsMessages.push(message);
   return message;
 };
 
@@ -71,7 +71,7 @@ server.on('connection', (socket) => {
 
   // Handle client disconnection
   socket.on('close', () => {
-    messages = []
+    wsMessages = []
     sequenceNumber = 0;
     console.log('Client disconnected');
   });
@@ -87,6 +87,7 @@ const httpServer = http.createServer((req, res) => {
     }
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(messages));
+    sequenceNumber = 0;
   } else if (req.method === 'GET' && (req.url === '/' || req.url === '/index.html')) {
     fs.readFile(path.join(__dirname, 'index.html'), (err, data) => {
       if (err) {
