@@ -98,8 +98,8 @@ const httpServer = http.createServer((req, res) => {
         res.end(data);
       }
     });
-  } else if (req.method === 'GET' && req.url === '/index.js') {
-    fs.readFile(path.join(__dirname, 'index.js'), (err, data) => {
+  } else if (req.method === 'GET' && req.url === '/client.js') {
+    fs.readFile(path.join(__dirname, 'client.js'), (err, data) => {
       if (err) {
         res.writeHead(500, { 'Content-Type': 'text/plain' });
         res.end('Internal Server Error');
