@@ -5,6 +5,9 @@ let lastMessageTime = null;
 const startButton = document.getElementById('startButton');
 const stopButton = document.getElementById('stopButton');
 const statsDisplay = document.getElementById('stats');
+const requestMessagesButton = document.createElement('button');
+requestMessagesButton.textContent = 'Request 10000 Messages';
+document.body.insertBefore(requestMessagesButton, messagesList);
 
 let renderTimes = [];
 let messageCount = 0;
@@ -83,6 +86,24 @@ stopButton.addEventListener('click', () => {
   if (socket && socket.readyState === WebSocket.OPEN) {
     socket.close();
   }
+});
+
+// Request 10000 messages from HTTP server
+requestMessagesButton.addEventListener('click', () => {
+  fetch('http://localhost:8081/messages', { headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' } })
+    .then(response => response.json())
+    .then(data => {
+      messagesList.innerHTML = ''; // Clear existing messages
+      data.forEach((message) => {
+        const listItem = document.createElement('li');
+        listItem.className = 'message';
+        listItem.textContent = `ID: ${message.uniqueId}, Sequence: ${message.sequenceNumber}, Text: ${message.randomText}`;
+        messagesList.appendChild(listItem);
+      });
+    })
+    .catch(error => {
+      console.error('Error fetching messages:', error);
+    });
 });
 
 // Function to update render time statistics
