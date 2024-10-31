@@ -23,15 +23,25 @@ server.on('connection', (socket) => {
     };
   };
 
-  // Send a message to the client every 2 seconds
-  const intervalId = setInterval(() => {
-    const message = generateMessage();
-    socket.send(JSON.stringify(message));
-  }, 100);
+  // Function to send messages with controlled frequency
+  const sendMessages = () => {
+    if (socket.readyState === WebSocket.OPEN) {
+      const message = generateMessage();
+      socket.send(JSON.stringify(message), (err) => {
+        if (err) {
+          console.error('Failed to send message:', err);
+        } else {
+          setImmediate(sendMessages); // Schedule the next message
+        }
+      });
+    }
+  };
+
+  // Start sending messages
+  setImmediate(sendMessages);
 
   // Handle client disconnection
   socket.on('close', () => {
     console.log('Client disconnected');
-    clearInterval(intervalId);
   });
 });
