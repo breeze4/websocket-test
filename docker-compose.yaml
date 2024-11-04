@@ -2,23 +2,21 @@ services:
   graphite:
     image: graphiteapp/graphite-statsd
     container_name: graphite
+    restart: always
     ports:
       - "80:80"       # Graphite web interface
-      - "2003:2003"   # Carbon receiver (plain text)
-    environment:
-      - GRAPHITE_STORAGE_DIR=/opt/graphite/storage
-      - STATSD_INTERFACE=0.0.0.0
-    volumes:
-      - ./graphite-storage:/opt/graphite/storage
-    restart: unless-stopped
+      - "2003-2004:2003-2004" # Carbon receivers
+      - "2023-2024:2023-2024" # Graphite web monitoring
+      - "8125:8125/udp" # StatsD UDP port
+      - "8126:8126"     # StatsD admin port
 
-  statsd:
-    image: graphiteapp/graphite-statsd
-    container_name: statsd
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: always
+    ports:
+      - "3000:3000" # Grafana web interface
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin # Default password
     depends_on:
       - graphite
-    environment:
-      - STATSD_PORT=8126
-    ports:
-      - "8126:8126/udp" # StatsD UDP port for sending metrics
-    restart: unless-stopped
