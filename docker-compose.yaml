@@ -1,0 +1,24 @@
+services:
+  graphite:
+    image: graphiteapp/graphite-statsd
+    container_name: graphite
+    ports:
+      - "80:80"       # Graphite web interface
+      - "2003:2003"   # Carbon receiver (plain text)
+    environment:
+      - GRAPHITE_STORAGE_DIR=/opt/graphite/storage
+      - STATSD_INTERFACE=0.0.0.0
+    volumes:
+      - ./graphite-storage:/opt/graphite/storage
+    restart: unless-stopped
+
+  statsd:
+    image: graphiteapp/graphite-statsd
+    container_name: statsd
+    depends_on:
+      - graphite
+    environment:
+      - STATSD_PORT=8126
+    ports:
+      - "8126:8126/udp" # StatsD UDP port for sending metrics
+    restart: unless-stopped
