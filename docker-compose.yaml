@@ -20,3 +20,9 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=admin # Default password
     depends_on:
       - graphite
+    volumes:
+      - ./provisioning:/etc/grafana/provisioning
+
+volumes:
+  provisioning:
+    driver: local
